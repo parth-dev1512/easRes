@@ -19,6 +19,8 @@ export function PuzzleTag({
   color,
   rotate = 0,
   className,
+  animate = false,
+  floatDelay = 0,
 }: {
   icon: LucideIcon;
   title: string;
@@ -26,13 +28,17 @@ export function PuzzleTag({
   color: PuzzleColor;
   rotate?: number;
   className?: string;
+  /** Adds a gentle continuous float. The rotate transform stays on the card
+   * itself so it doesn't fight with the float animation's transform. */
+  animate?: boolean;
+  floatDelay?: number;
 }) {
-  return (
+  const card = (
     <PuzzleCard
       className={clsx(
         "flex items-center gap-6 p-6",
         colorClasses[color],
-        className
+        animate ? "w-full" : className
       )}
       style={{ transform: `rotate(${rotate}deg)` }}
     >
@@ -52,5 +58,16 @@ export function PuzzleTag({
         </p>
       </div>
     </PuzzleCard>
+  );
+
+  if (!animate) return card;
+
+  return (
+    <div
+      className={clsx("animate-float", className)}
+      style={{ animationDelay: `${floatDelay}s` }}
+    >
+      {card}
+    </div>
   );
 }
