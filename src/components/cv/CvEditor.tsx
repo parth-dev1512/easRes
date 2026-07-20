@@ -1,3 +1,4 @@
+import { LinkedInImport } from "./LinkedInImport";
 import { PersonalInfoSection } from "./PersonalInfoSection";
 import { EducationSection } from "./EducationSection";
 import { ExperienceSection } from "./ExperienceSection";
@@ -9,6 +10,7 @@ import type { MasterCv } from "@/lib/types/cv";
 export function CvEditor({ cv }: { cv: MasterCv }) {
   return (
     <div className="max-w-3xl mx-auto flex flex-col gap-12 py-12 px-4">
+      <LinkedInImport />
       <PersonalInfoSection profile={cv.profile} />
       <ExperienceSection entries={cv.experience} />
       <EducationSection entries={cv.education} />

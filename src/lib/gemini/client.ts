@@ -5,6 +5,12 @@ import {
   GENERATED_CONTENT_JSON_SCHEMA,
   type GeneratedContent,
 } from "@/lib/gemini/schema";
+import {
+  ParsedResumeSchema,
+  PARSED_RESUME_JSON_SCHEMA,
+  type ParsedResume,
+} from "@/lib/gemini/importSchema";
+import { RESUME_IMPORT_PROMPT } from "@/lib/gemini/importPrompt";
 import type { MasterCv } from "@/lib/types/cv";
 
 // "-latest" alias always points at Google's current recommended flash-tier
@@ -95,4 +101,48 @@ export async function tailorResume(
   }
 
   return sanitizeAgainstMasterCv(parsed.data, cv);
+}
+
+async function callGeminiWithPdf(
+  promptText: string,
+  base64Pdf: string
+): Promise<unknown> {
+  const ai = getClient();
+  const response = await ai.models.generateContent({
+    model: MODEL,
+    contents: [
+      {
+        role: "user",
+        parts: [
+          { text: promptText },
+          { inlineData: { mimeType: "application/pdf", data: base64Pdf } },
+        ],
+      },
+    ],
+    config: {
+      responseMimeType: "application/json",
+      responseJsonSchema: PARSED_RESUME_JSON_SCHEMA,
+    },
+  });
+
+  const text = response.text;
+  if (!text) throw new Error("Gemini returned an empty response");
+  return JSON.parse(text);
+}
+
+export async function parseResumePdf(base64Pdf: string): Promise<ParsedResume> {
+  let raw = await callGeminiWithPdf(RESUME_IMPORT_PROMPT, base64Pdf);
+  let parsed = ParsedResumeSchema.safeParse(raw);
+
+  if (!parsed.success) {
+    const retryPrompt = `${RESUME_IMPORT_PROMPT}\n\nYour previous response failed schema validation with this error:\n${parsed.error.message}\n\nReturn valid JSON only, matching the schema exactly.`;
+    raw = await callGeminiWithPdf(retryPrompt, base64Pdf);
+    parsed = ParsedResumeSchema.safeParse(raw);
+  }
+
+  if (!parsed.success) {
+    throw new Error(`Gemini response failed schema validation: ${parsed.error.message}`);
+  }
+
+  return parsed.data;
 }
