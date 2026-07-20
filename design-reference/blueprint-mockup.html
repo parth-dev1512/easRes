@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html class="light dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Professional Document Blueprint Interface</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#000000",
+                        "board": "#ffffff",
+                        "puzzle-red": "#FF3D3D",
+                        "puzzle-green": "#00D166",
+                        "puzzle-blue": "#2E5BFF",
+                        "puzzle-yellow": "#FFD600",
+                        "puzzle-pink": "#FF61D2"
+                    },
+                    fontFamily: {
+                        "sans": ["Plus Jakarta Sans", "sans-serif"],
+                        "impact": ["Inter", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        :root {
+            --dot-color: #000000;
+        }
+        .dot-grid {
+            background-image: radial-gradient(var(--dot-color) 1.5px, transparent 1.5px);
+            background-size: 40px 40px;
+        }
+        .puzzle-card {
+            border: 4px solid #000000;
+            box-shadow: 10px 10px 0px 0px rgba(0,0,0,1);
+        }
+        .resume-shadow {
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-board font-sans text-slate-900 overflow-hidden">
+<main class="relative h-screen w-screen dot-grid overflow-hidden flex items-center justify-center">
+<header class="fixed top-0 left-0 right-0 z-50 flex h-24 items-center justify-between px-12 pointer-events-none">
+<div class="flex items-center gap-3 pointer-events-auto bg-white border-4 border-black p-4 px-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+<h1 class="text-3xl font-[900] tracking-tighter uppercase italic">Blueprint.v2</h1>
+</div>
+<div class="flex items-center gap-4 pointer-events-auto">
+<button class="h-16 w-16 bg-white border-4 border-black flex items-center justify-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
+<span class="material-symbols-outlined font-bold text-2xl">settings</span>
+</button>
+<button class="px-10 h-16 bg-black text-white font-[900] uppercase tracking-widest text-sm flex items-center justify-center hover:bg-slate-800 transition-colors">
+                Finalize Layout
+            </button>
+</div>
+</header>
+<div class="relative z-10 w-[720px] h-[920px] bg-white border border-slate-200 resume-shadow p-12 pointer-events-auto overflow-y-auto font-serif">
+<div class="mb-6">
+<h2 class="text-4xl font-extrabold text-black tracking-tight font-sans">MAHTAB KAUR</h2>
+<div class="text-[13px] text-slate-700 mt-1 font-sans flex gap-4">
+<span>mahtab.kaur_ug2024@ashoka.edu.in</span>
+<span>+91 6367560526</span>
+</div>
+</div>
+<div class="space-y-6">
+<section>
+<h3 class="text-sm font-bold uppercase tracking-wider border-b border-black pb-0.5 mb-3 font-sans">EDUCATION</h3>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between font-bold text-[13px] text-black">
+<span>B.Sc Economics and Finance, Minor in Media Studies</span>
+<span>Aug 2024 - Present</span>
+</div>
+<div class="flex justify-between text-[13px] text-slate-800 italic">
+<span>Ashoka University</span>
+<span>2024</span>
+</div>
+<ul class="list-disc list-inside text-[12px] text-slate-700 mt-1 ml-2 space-y-0.5">
+<li>CGPA: 3.63/4.00 (Dean's List, Semester 1 - awarded for CGPA above 3.6)</li>
+</ul>
+</div>
+<div>
+<div class="flex justify-between font-bold text-[13px] text-black">
+<span>Class XII - AISSCE</span>
+<span>June 2023 - Oct 2023</span>
+</div>
+<div class="flex justify-between text-[13px] text-slate-800 italic">
+<span>Delhi Public School, Jalandhar</span>
+<span>2023</span>
+</div>
+<ul class="list-disc list-inside text-[12px] text-slate-700 mt-1 ml-2 space-y-0.5">
+<li>City Topper for Commerce stream | Scored 97.4%, including 100 in Painting</li>
+</ul>
+</div>
+</div>
+</section>
+<section>
+<h3 class="text-sm font-bold uppercase tracking-wider border-b border-black pb-0.5 mb-3 font-sans">INTERNSHIP EXPERIENCE</h3>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between font-bold text-[13px] text-black">
+<span>New Delhi Global Youth Summit (NDGYS) - Social House Learning</span>
+<span>June 2023 - Oct 2023</span>
+</div>
+<div class="text-[13px] text-slate-800 italic">Public Relations Intern</div>
+<ul class="list-disc list-outside text-[12px] text-slate-700 mt-2 ml-4 space-y-1">
+<li>Led PR initiatives for NDGYS, a summit with 1,000+ attendees and 30+ speakers, hosted at SRCC, DU</li>
+<li>Personally secured top education influencers Shobhit Nirwan, Ashu Ghai, and Digraj Singh Rajput for the Education Panel</li>
+<li>Executed targeted social media and email campaigns, resulting in a 20% increase in delegate turnout</li>
+<li>Managed official social media handles; created and promoted content, with multiple reels surpassing 50,000+ views</li>
+</ul>
+</div>
+</div>
+</section>
+<section>
+<h3 class="text-sm font-bold uppercase tracking-wider border-b border-black pb-0.5 mb-3 font-sans">WORK EXPERIENCE</h3>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between font-bold text-[13px] text-black">
+<span>Cohort Leader - Ashoka University</span>
+<span>Aug 2025</span>
+</div>
+<ul class="list-disc list-outside text-[12px] text-slate-700 mt-2 ml-4 space-y-1">
+<li>Selected from a competitive pool of 400+ applicants to mentor first-year students during their university transition</li>
+<li>Conducted one-on-one mentorship for 40+ students and facilitated safe, inclusive spaces addressing academic, social, and emotional challenges</li>
+</ul>
+</div>
+<div>
+<div class="flex justify-between font-bold text-[13px] text-black">
+<span>Director - The Comic Relief Club (TCR), Ashoka University</span>
+<span>March 2025 - Present</span>
+</div>
+<ul class="list-disc list-outside text-[12px] text-slate-700 mt-2 ml-4 space-y-1">
+<li>Elected to lead a 65+ member club; executed two iterations of Thursday Night Live (400-500 attendees/show), raising ₹40,000+ for workers' welfare funds</li>
+<li>Oversaw 4-5 scripts per iteration, managing end-to-end production (pre-production to live execution)</li>
+</ul>
+</div>
+</div>
+</section>
+</div>
+</div>
+<div class="absolute top-[12%] left-[6%] w-80 h-40 bg-puzzle-red puzzle-card rotate-[-4deg] flex items-center gap-6 p-6 z-20 group hover:rotate-0 transition-transform cursor-move">
+<div class="bg-black w-20 h-20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-puzzle-red text-4xl">work_history</span>
+</div>
+<div>
+<h4 class="text-black font-impact text-3xl font-[900] leading-none uppercase tracking-tighter">Work<br/>History</h4>
+<p class="text-black/70 font-black text-[10px] mt-1 uppercase">Professional Career Log</p>
+</div>
+</div>
+<div class="absolute top-[45%] left-[4%] w-80 h-40 bg-puzzle-green puzzle-card rotate-[3deg] flex items-center gap-6 p-6 z-20 group hover:rotate-0 transition-transform cursor-move">
+<div class="bg-black w-20 h-20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-puzzle-green text-4xl">terminal</span>
+</div>
+<div>
+<h4 class="text-black font-impact text-3xl font-[900] leading-none uppercase tracking-tighter">Tech<br/>Skills</h4>
+<p class="text-black/70 font-black text-[10px] mt-1 uppercase">Stack &amp; Competencies</p>
+</div>
+</div>
+<div class="absolute top-[15%] right-[6%] w-80 h-40 bg-puzzle-blue puzzle-card rotate-[5deg] flex items-center gap-6 p-6 z-20 group hover:rotate-0 transition-transform cursor-move">
+<div class="bg-black w-20 h-20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-puzzle-blue text-4xl">school</span>
+</div>
+<div>
+<h4 class="text-black font-impact text-3xl font-[900] leading-none uppercase tracking-tighter">Academic<br/>Info</h4>
+<p class="text-black/70 font-black text-[10px] mt-1 uppercase">Education &amp; Degrees</p>
+</div>
+</div>
+<div class="absolute bottom-[10%] right-[8%] w-80 h-40 bg-puzzle-yellow puzzle-card rotate-[-3deg] flex items-center gap-6 p-6 z-20 group hover:rotate-0 transition-transform cursor-move">
+<div class="bg-black w-20 h-20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-puzzle-yellow text-4xl">rocket_launch</span>
+</div>
+<div>
+<h4 class="text-black font-impact text-3xl font-[900] leading-none uppercase tracking-tighter">Project<br/>Cases</h4>
+<p class="text-black/70 font-black text-[10px] mt-1 uppercase">Portfolio Highlights</p>
+</div>
+</div>
+<div class="absolute top-[60%] right-[5%] w-80 h-40 bg-puzzle-pink puzzle-card rotate-[8deg] flex items-center gap-6 p-6 z-20 group hover:rotate-0 transition-transform cursor-move">
+<div class="bg-black w-20 h-20 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-puzzle-pink text-4xl">share</span>
+</div>
+<div>
+<h4 class="text-black font-impact text-3xl font-[900] leading-none uppercase tracking-tighter">Social<br/>Links</h4>
+<p class="text-black/70 font-black text-[10px] mt-1 uppercase">Web Presence &amp; Profiles</p>
+</div>
+</div>
+<div class="fixed bottom-10 left-10 flex gap-4 z-50">
+<div class="bg-white border-4 border-black p-4 flex gap-6 items-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+<div class="flex gap-2">
+<button class="w-10 h-10 flex items-center justify-center hover:bg-slate-100 border-2 border-transparent active:border-black transition-all">
+<span class="material-symbols-outlined font-black">zoom_in</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center hover:bg-slate-100 border-2 border-transparent active:border-black transition-all">
+<span class="material-symbols-outlined font-black">zoom_out</span>
+</button>
+</div>
+<div class="h-8 w-[3px] bg-black"></div>
+<p class="text-sm font-black uppercase tracking-[0.2em]">100% Scale</p>
+</div>
+</div>
+<div class="fixed bottom-10 right-10 z-50">
+<div class="flex flex-col gap-4 items-end">
+<div class="bg-black text-white px-8 py-3 text-[11px] font-black uppercase tracking-[0.4em] rotate-1 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.2)]">
+                Drag to Assemble
+            </div>
+<button class="bg-white border-4 border-black p-5 px-10 font-impact font-[900] text-2xl uppercase italic shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
+                Export Final Layout
+            </button>
+</div>
+</div>
+</main>
+</body></html>

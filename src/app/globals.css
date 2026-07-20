@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+:root {
+  --color-primary: #000000;
+  --color-board: #ffffff;
+  --color-puzzle-red: #ff3d3d;
+  --color-puzzle-green: #00d166;
+  --color-puzzle-blue: #2e5bff;
+  --color-puzzle-yellow: #ffd600;
+  --color-puzzle-pink: #ff61d2;
+}
+
+@theme inline {
+  --color-primary: var(--color-primary);
+  --color-board: var(--color-board);
+  --color-puzzle-red: var(--color-puzzle-red);
+  --color-puzzle-green: var(--color-puzzle-green);
+  --color-puzzle-blue: var(--color-puzzle-blue);
+  --color-puzzle-yellow: var(--color-puzzle-yellow);
+  --color-puzzle-pink: var(--color-puzzle-pink);
+
+  --font-sans: var(--font-plus-jakarta-sans);
+  --font-impact: var(--font-inter);
+}
+
+.dot-grid {
+  background-image: radial-gradient(#000000 1.5px, transparent 1.5px);
+  background-size: 40px 40px;
+}
+
+.puzzle-card {
+  border: 4px solid #000000;
+  box-shadow: 10px 10px 0px 0px rgba(0, 0, 0, 1);
+}
+
+.resume-shadow {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+}
+
+body {
+  background: var(--color-board);
+  color: #0f172a;
+}
+
+@media print {
+  @page {
+    size: letter;
+    margin: 0.5in;
+  }
+}
