@@ -1,20 +1,33 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { PuzzleCard } from "@/components/puzzle/PuzzleCard";
 import { BlueprintButton } from "@/components/puzzle/BlueprintButton";
 import { updateProfile } from "@/app/(protected)/cv/actions";
 import type { Profile } from "@/lib/types/cv";
 
-async function action(_prevState: unknown, formData: FormData) {
-  await updateProfile(formData);
-  return { saved: true };
-}
-
 export function PersonalInfoSection({ profile }: { profile: Profile }) {
-  const [state, formAction, pending] = useActionState(action, undefined);
   const [open, setOpen] = useState(true);
+  const [justSaved, setJustSaved] = useState(false);
+  const savedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (savedTimeoutRef.current) clearTimeout(savedTimeoutRef.current);
+    };
+  }, []);
+
+  const [, formAction, pending] = useActionState(
+    async (_prevState: null, formData: FormData) => {
+      await updateProfile(formData);
+      setJustSaved(true);
+      if (savedTimeoutRef.current) clearTimeout(savedTimeoutRef.current);
+      savedTimeoutRef.current = setTimeout(() => setJustSaved(false), 10000);
+      return null;
+    },
+    null
+  );
 
   return (
     <section className="flex flex-col gap-4 lg:-mx-24 lg:w-[calc(100%+12rem)] xl:-mx-40 xl:w-[calc(100%+20rem)]">
@@ -106,19 +119,14 @@ export function PersonalInfoSection({ profile }: { profile: Profile }) {
               />
             </label>
           </div>
-          <div className="flex items-center justify-between">
-            {state?.saved && (
-              <span className="text-sm font-medium text-puzzle-green">
-                Saved.
-              </span>
-            )}
+          <div className="flex items-center justify-end">
             <BlueprintButton
               type="submit"
               variant="primary"
-              className="px-6 h-10 ml-auto"
+              className="px-6 h-10"
               disabled={pending}
             >
-              Save
+              {pending ? "Saving..." : justSaved ? "Saved" : "Save"}
             </BlueprintButton>
           </div>
         </form>

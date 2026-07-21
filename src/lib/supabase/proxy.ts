@@ -1,8 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isAdminEmail } from "@/lib/admin/config";
 
-const PROTECTED_PREFIXES = ["/dashboard", "/cv", "/tailor", "/resumes", "/settings"];
+const PROTECTED_PREFIXES = ["/dashboard", "/cv", "/tailor", "/resumes", "/settings", "/admin"];
 const AUTH_PREFIXES = ["/login", "/signup"];
+const ADMIN_PREFIX = "/admin";
 
 export async function updateSession(request: NextRequest) {
   // Cloned so we can stamp x-user-id onto it below and hand it to every
@@ -61,7 +63,16 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse;
   }
 
+  if (path.startsWith(ADMIN_PREFIX) && !isAdminEmail(user.email)) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/dashboard";
+    return NextResponse.redirect(url);
+  }
+
   requestHeaders.set("x-user-id", user.id);
+  if (user.email) {
+    requestHeaders.set("x-user-email", user.email);
+  }
   const finalResponse = NextResponse.next({
     request: { headers: requestHeaders },
   });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import { PuzzleCard } from "@/components/puzzle/PuzzleCard";
 import { BlueprintButton } from "@/components/puzzle/BlueprintButton";
@@ -37,8 +37,27 @@ export function EntryCard({
   summaryTitle?: string;
   summarySubtitle?: string;
 }) {
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const [collapsed, setCollapsed] = useState(false);
+  const [justSaved, setJustSaved] = useState(false);
+  const savedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (savedTimeoutRef.current) clearTimeout(savedTimeoutRef.current);
+    };
+  }, []);
+
+  const [, formAction, isSaving] = useActionState(
+    async (_prevState: null, formData: FormData) => {
+      await saveAction(entryId, formData);
+      setJustSaved(true);
+      if (savedTimeoutRef.current) clearTimeout(savedTimeoutRef.current);
+      savedTimeoutRef.current = setTimeout(() => setJustSaved(false), 10000);
+      return null;
+    },
+    null
+  );
 
   const showForm = !collapsible || !collapsed;
 
@@ -72,7 +91,7 @@ export function EntryCard({
 
       {showForm && (
         <form
-          action={saveAction.bind(null, entryId)}
+          action={formAction}
           className={
             collapsible
               ? "flex flex-col gap-4 px-6 pb-6 pt-1 border-t-2 border-black"
@@ -168,9 +187,9 @@ export function EntryCard({
               type="submit"
               variant="primary"
               className="px-6 h-10"
-              disabled={isPending}
+              disabled={isSaving}
             >
-              Save
+              {isSaving ? "Saving..." : justSaved ? "Saved" : "Save"}
             </BlueprintButton>
           </div>
         </form>
