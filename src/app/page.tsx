@@ -1,11 +1,24 @@
 import Link from "next/link";
+import { headers, cookies } from "next/headers";
 import { Briefcase, Terminal, School, Rocket, Share2 } from "lucide-react";
 import { DotGridBackground } from "@/components/puzzle/DotGridBackground";
 import { PuzzleCard } from "@/components/puzzle/PuzzleCard";
 import { PuzzleTag } from "@/components/puzzle/PuzzleTag";
 import { BlueprintButton } from "@/components/puzzle/BlueprintButton";
 
-export default function Home() {
+export default async function Home() {
+  // x-user-id is set by the proxy when there's a live session (see
+  // src/lib/supabase/proxy.ts); has_account is a long-lived cookie set on
+  // any past signup/login on this device, and survives logout.
+  const isLoggedIn = Boolean((await headers()).get("x-user-id"));
+  const hasAccount = (await cookies()).get("has_account")?.value === "1";
+
+  const heroCta = isLoggedIn
+    ? { href: "/dashboard", label: "Enter" }
+    : hasAccount
+      ? { href: "/login", label: "Enter" }
+      : { href: "/signup", label: "Get Started" };
+
   return (
     <DotGridBackground
       variant="faint"
@@ -47,7 +60,7 @@ export default function Home() {
           live.
         </p>
         <Link
-          href="/signup"
+          href={heroCta.href}
           className="animate-fade-in-up"
           style={{ animationDelay: "0.45s" }}
         >
@@ -55,7 +68,7 @@ export default function Home() {
             variant="primary"
             className="transition-transform hover:scale-105"
           >
-            Get Started
+            {heroCta.label}
           </BlueprintButton>
         </Link>
       </div>

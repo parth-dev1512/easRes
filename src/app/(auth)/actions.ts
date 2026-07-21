@@ -1,8 +1,22 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { AuthSchema, type AuthFormState } from "@/lib/types/auth";
+
+// Marks this browser as belonging to someone with an account, so the
+// landing page can offer "Enter" instead of "Get Started" on return
+// visits, even after they log out. Not a security check.
+async function markDeviceAsRegistered() {
+  (await cookies()).set("has_account", "1", {
+    maxAge: 60 * 60 * 24 * 365,
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+  });
+}
 
 export async function login(
   _prevState: AuthFormState,
@@ -22,6 +36,7 @@ export async function login(
     return { error: error.message };
   }
 
+  await markDeviceAsRegistered();
   redirect("/dashboard");
 }
 
@@ -49,6 +64,7 @@ export async function signup(
     return { error: error.message };
   }
 
+  await markDeviceAsRegistered();
   return { success: "Check your email to confirm your account." };
 }
 

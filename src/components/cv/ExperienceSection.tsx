@@ -52,7 +52,7 @@ export function ExperienceSection({ entries: initialEntries }: { entries: Experi
   }
 
   return (
-    <section className="flex flex-col gap-4">
+    <section className="flex flex-col gap-4 lg:-mx-24 lg:w-[calc(100%+12rem)] xl:-mx-40 xl:w-[calc(100%+20rem)]">
       <PuzzleTag
         icon={Briefcase}
         title={"Work\nHistory"}
@@ -60,18 +60,27 @@ export function ExperienceSection({ entries: initialEntries }: { entries: Experi
         color="red"
         className="w-fit"
       />
-      {entries.map((entry) => (
-        <EntryCard
-          key={entry.id}
-          entryId={entry.id}
-          fields={FIELDS}
-          values={entry}
-          bullets={entry.experience_bullets.map((b) => b.content)}
-          saveAction={saveExperienceEntry}
-          deleteAction={handleDelete}
-          moveAction={handleMove}
-        />
-      ))}
+      {entries.map((entry) => {
+        const dateRange = entry.is_current
+          ? `${entry.start_date || "?"} – Present`
+          : `${entry.start_date || "?"} – ${entry.end_date || "?"}`;
+        return (
+          <EntryCard
+            key={entry.id}
+            entryId={entry.id}
+            fields={FIELDS}
+            values={entry}
+            bullets={entry.experience_bullets.map((b) => b.content)}
+            saveAction={saveExperienceEntry}
+            deleteAction={handleDelete}
+            moveAction={handleMove}
+            collapsible
+            dense
+            summaryTitle={entry.role_title || "Untitled Role"}
+            summarySubtitle={[entry.company, dateRange].filter(Boolean).join(" · ")}
+          />
+        );
+      })}
       <BlueprintButton
         type="button"
         variant="secondary"
