@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { getMasterCv } from "@/lib/data/cv";
-import { tailorResume } from "@/lib/gemini/client";
+import { tailorResume } from "@/lib/claude/client";
 import { computeDefaultToggleState } from "@/lib/types/resume";
 
 export const maxDuration = 30;
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
 
-    if (message.includes("GEMINI_API_KEY")) {
+    if (message.includes("ANTHROPIC_API_KEY")) {
       return NextResponse.json({ error: "AI is not configured" }, { status: 503 });
     }
     if (message.includes("schema validation")) {

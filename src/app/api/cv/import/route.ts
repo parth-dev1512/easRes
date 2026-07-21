@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { parseResumePdf } from "@/lib/gemini/client";
+import { parseResumePdf } from "@/lib/claude/client";
 import { importParsedResume } from "@/lib/data/importCv";
 
 export const maxDuration = 60;
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
 
-    if (message.includes("GEMINI_API_KEY")) {
+    if (message.includes("ANTHROPIC_API_KEY")) {
       return NextResponse.json({ error: "AI is not configured" }, { status: 503 });
     }
     if (message.includes("schema validation")) {
