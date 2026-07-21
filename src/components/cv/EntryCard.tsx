@@ -26,8 +26,8 @@ export function EntryCard({
   values: Record<string, unknown>;
   bullets?: string[];
   saveAction: (entryId: string, formData: FormData) => Promise<void>;
-  deleteAction: (entryId: string) => Promise<void>;
-  moveAction: (entryId: string, direction: "up" | "down") => Promise<void>;
+  deleteAction: (entryId: string) => void;
+  moveAction: (entryId: string, direction: "up" | "down") => void;
 }) {
   const [isPending, startTransition] = useTransition();
 

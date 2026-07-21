@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Briefcase } from "lucide-react";
 import { PuzzleTag } from "@/components/puzzle/PuzzleTag";
 import { BlueprintButton } from "@/components/puzzle/BlueprintButton";
@@ -22,8 +22,34 @@ const FIELDS = [
   { name: "is_current", label: "Current Role", type: "checkbox" as const },
 ];
 
-export function ExperienceSection({ entries }: { entries: ExperienceEntry[] }) {
+export function ExperienceSection({ entries: initialEntries }: { entries: ExperienceEntry[] }) {
+  const [entries, setEntries] = useState(initialEntries);
   const [isPending, startTransition] = useTransition();
+
+  function handleDelete(entryId: string) {
+    const snapshot = entries;
+    setEntries((es) => es.filter((e) => e.id !== entryId));
+    deleteExperienceEntry(entryId).catch(() => setEntries(snapshot));
+  }
+
+  function handleMove(entryId: string, direction: "up" | "down") {
+    const index = entries.findIndex((e) => e.id === entryId);
+    const neighborIndex = direction === "up" ? index - 1 : index + 1;
+    if (index === -1 || neighborIndex < 0 || neighborIndex >= entries.length) return;
+
+    const snapshot = entries;
+    const next = [...entries];
+    [next[index], next[neighborIndex]] = [next[neighborIndex], next[index]];
+    setEntries(next);
+    moveExperienceEntry(entryId, direction).catch(() => setEntries(snapshot));
+  }
+
+  function handleCreate() {
+    startTransition(async () => {
+      const row = await createExperienceEntry();
+      setEntries((es) => [...es, { ...row, experience_bullets: [] } as ExperienceEntry]);
+    });
+  }
 
   return (
     <section className="flex flex-col gap-4">
@@ -42,8 +68,8 @@ export function ExperienceSection({ entries }: { entries: ExperienceEntry[] }) {
           values={entry}
           bullets={entry.experience_bullets.map((b) => b.content)}
           saveAction={saveExperienceEntry}
-          deleteAction={deleteExperienceEntry}
-          moveAction={moveExperienceEntry}
+          deleteAction={handleDelete}
+          moveAction={handleMove}
         />
       ))}
       <BlueprintButton
@@ -51,7 +77,7 @@ export function ExperienceSection({ entries }: { entries: ExperienceEntry[] }) {
         variant="secondary"
         className="w-fit px-6 h-12"
         disabled={isPending}
-        onClick={() => startTransition(() => createExperienceEntry())}
+        onClick={handleCreate}
       >
         + Add Experience
       </BlueprintButton>

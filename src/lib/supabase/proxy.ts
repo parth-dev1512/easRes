@@ -5,7 +5,14 @@ const PROTECTED_PREFIXES = ["/dashboard", "/cv", "/tailor", "/resumes"];
 const AUTH_PREFIXES = ["/login", "/signup"];
 
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
+  // Cloned so we can stamp x-user-id onto it below and hand it to every
+  // NextResponse.next() we build — the proxy is the only place that pays
+  // for auth.getUser()'s network round trip; everything downstream (layouts,
+  // pages, Server Actions) trusts this header instead of re-verifying.
+  const requestHeaders = new Headers(request.headers);
+  let supabaseResponse = NextResponse.next({
+    request: { headers: requestHeaders },
+  });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -19,7 +26,9 @@ export async function updateSession(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           );
-          supabaseResponse = NextResponse.next({ request });
+          supabaseResponse = NextResponse.next({
+            request: { headers: requestHeaders },
+          });
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           );
@@ -48,5 +57,16 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  return supabaseResponse;
+  if (!user) {
+    return supabaseResponse;
+  }
+
+  requestHeaders.set("x-user-id", user.id);
+  const finalResponse = NextResponse.next({
+    request: { headers: requestHeaders },
+  });
+  supabaseResponse.cookies.getAll().forEach((cookie) => {
+    finalResponse.cookies.set(cookie);
+  });
+  return finalResponse;
 }

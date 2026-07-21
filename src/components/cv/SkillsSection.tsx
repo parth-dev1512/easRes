@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { Terminal, X } from "lucide-react";
 import { PuzzleTag } from "@/components/puzzle/PuzzleTag";
 import { PuzzleCard } from "@/components/puzzle/PuzzleCard";
@@ -8,9 +8,24 @@ import { BlueprintButton } from "@/components/puzzle/BlueprintButton";
 import { createSkill, deleteSkill } from "@/app/(protected)/cv/actions";
 import type { Skill } from "@/lib/types/cv";
 
-export function SkillsSection({ skills }: { skills: Skill[] }) {
+export function SkillsSection({ skills: initialSkills }: { skills: Skill[] }) {
+  const [skills, setSkills] = useState(initialSkills);
   const [isPending, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
+
+  function handleDelete(skillId: string) {
+    const snapshot = skills;
+    setSkills((s) => s.filter((sk) => sk.id !== skillId));
+    deleteSkill(skillId).catch(() => setSkills(snapshot));
+  }
+
+  function handleCreate(formData: FormData) {
+    startTransition(async () => {
+      const row = await createSkill(formData);
+      setSkills((s) => [...s, row as Skill]);
+    });
+    formRef.current?.reset();
+  }
 
   return (
     <section className="flex flex-col gap-4">
@@ -37,7 +52,7 @@ export function SkillsSection({ skills }: { skills: Skill[] }) {
               <button
                 type="button"
                 aria-label="Remove skill"
-                onClick={() => startTransition(() => deleteSkill(skill.id))}
+                onClick={() => handleDelete(skill.id)}
                 className="text-puzzle-red"
               >
                 <X size={14} />
@@ -47,10 +62,7 @@ export function SkillsSection({ skills }: { skills: Skill[] }) {
         </div>
         <form
           ref={formRef}
-          action={(formData) => {
-            startTransition(() => createSkill(formData));
-            formRef.current?.reset();
-          }}
+          action={handleCreate}
           className="flex flex-col sm:flex-row gap-2"
         >
           <input

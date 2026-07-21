@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Rocket } from "lucide-react";
 import { PuzzleTag } from "@/components/puzzle/PuzzleTag";
 import { BlueprintButton } from "@/components/puzzle/BlueprintButton";
@@ -22,8 +22,34 @@ const FIELDS = [
   { name: "description", label: "Description", type: "textarea" as const },
 ];
 
-export function ProjectsSection({ entries }: { entries: ProjectEntry[] }) {
+export function ProjectsSection({ entries: initialEntries }: { entries: ProjectEntry[] }) {
+  const [entries, setEntries] = useState(initialEntries);
   const [isPending, startTransition] = useTransition();
+
+  function handleDelete(entryId: string) {
+    const snapshot = entries;
+    setEntries((es) => es.filter((e) => e.id !== entryId));
+    deleteProjectEntry(entryId).catch(() => setEntries(snapshot));
+  }
+
+  function handleMove(entryId: string, direction: "up" | "down") {
+    const index = entries.findIndex((e) => e.id === entryId);
+    const neighborIndex = direction === "up" ? index - 1 : index + 1;
+    if (index === -1 || neighborIndex < 0 || neighborIndex >= entries.length) return;
+
+    const snapshot = entries;
+    const next = [...entries];
+    [next[index], next[neighborIndex]] = [next[neighborIndex], next[index]];
+    setEntries(next);
+    moveProjectEntry(entryId, direction).catch(() => setEntries(snapshot));
+  }
+
+  function handleCreate() {
+    startTransition(async () => {
+      const row = await createProjectEntry();
+      setEntries((es) => [...es, { ...row, project_bullets: [] } as ProjectEntry]);
+    });
+  }
 
   return (
     <section className="flex flex-col gap-4">
@@ -42,8 +68,8 @@ export function ProjectsSection({ entries }: { entries: ProjectEntry[] }) {
           values={{ ...entry, tech_stack: (entry.tech_stack ?? []).join(", ") }}
           bullets={entry.project_bullets.map((b) => b.content)}
           saveAction={saveProjectEntry}
-          deleteAction={deleteProjectEntry}
-          moveAction={moveProjectEntry}
+          deleteAction={handleDelete}
+          moveAction={handleMove}
         />
       ))}
       <BlueprintButton
@@ -51,7 +77,7 @@ export function ProjectsSection({ entries }: { entries: ProjectEntry[] }) {
         variant="secondary"
         className="w-fit px-6 h-12"
         disabled={isPending}
-        onClick={() => startTransition(() => createProjectEntry())}
+        onClick={handleCreate}
       >
         + Add Project
       </BlueprintButton>

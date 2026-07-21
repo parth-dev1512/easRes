@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { Share2, X } from "lucide-react";
 import { PuzzleTag } from "@/components/puzzle/PuzzleTag";
 import { PuzzleCard } from "@/components/puzzle/PuzzleCard";
@@ -8,9 +8,24 @@ import { BlueprintButton } from "@/components/puzzle/BlueprintButton";
 import { createLink, deleteLink } from "@/app/(protected)/cv/actions";
 import type { Link as CvLink } from "@/lib/types/cv";
 
-export function LinksSection({ links }: { links: CvLink[] }) {
+export function LinksSection({ links: initialLinks }: { links: CvLink[] }) {
+  const [links, setLinks] = useState(initialLinks);
   const [isPending, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
+
+  function handleDelete(linkId: string) {
+    const snapshot = links;
+    setLinks((l) => l.filter((lk) => lk.id !== linkId));
+    deleteLink(linkId).catch(() => setLinks(snapshot));
+  }
+
+  function handleCreate(formData: FormData) {
+    startTransition(async () => {
+      const row = await createLink(formData);
+      setLinks((l) => [...l, row as CvLink]);
+    });
+    formRef.current?.reset();
+  }
 
   return (
     <section className="flex flex-col gap-4">
@@ -34,7 +49,7 @@ export function LinksSection({ links }: { links: CvLink[] }) {
               <button
                 type="button"
                 aria-label="Remove link"
-                onClick={() => startTransition(() => deleteLink(link.id))}
+                onClick={() => handleDelete(link.id)}
                 className="text-puzzle-red"
               >
                 <X size={14} />
@@ -44,10 +59,7 @@ export function LinksSection({ links }: { links: CvLink[] }) {
         </div>
         <form
           ref={formRef}
-          action={(formData) => {
-            startTransition(() => createLink(formData));
-            formRef.current?.reset();
-          }}
+          action={handleCreate}
           className="flex flex-col sm:flex-row gap-2"
         >
           <input

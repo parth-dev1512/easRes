@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import {
   requireUserId,
@@ -72,7 +71,6 @@ export async function updateProfile(formData: FormData) {
   const supabase = await createClient();
   const { error } = await supabase.from("profiles").update(fields).eq("id", userId);
   if (error) throw error;
-  revalidatePath("/cv");
 }
 
 // ---------------------------------------------------------------------
@@ -81,8 +79,7 @@ export async function updateProfile(formData: FormData) {
 export async function createEducationEntry() {
   const userId = await requireUserId();
   const sortOrder = await nextSortOrder("education", userId, "user_id", userId);
-  await insertOwnedRow("education", userId, { sort_order: sortOrder });
-  revalidatePath("/cv");
+  return insertOwnedRow("education", userId, { sort_order: sortOrder });
 }
 
 export async function saveEducationEntry(entryId: string, formData: FormData) {
@@ -95,27 +92,26 @@ export async function saveEducationEntry(entryId: string, formData: FormData) {
     end_date: formData.get("end_date"),
     gpa: formData.get("gpa"),
   });
-  await updateOwnedRow("education", userId, entryId, fields);
-  await replaceBullets(
-    "education_bullets",
-    "education_id",
-    entryId,
-    userId,
-    bulletContentsFrom(formData)
-  );
-  revalidatePath("/cv");
+  await Promise.all([
+    updateOwnedRow("education", userId, entryId, fields),
+    replaceBullets(
+      "education_bullets",
+      "education_id",
+      entryId,
+      userId,
+      bulletContentsFrom(formData)
+    ),
+  ]);
 }
 
 export async function deleteEducationEntry(entryId: string) {
   const userId = await requireUserId();
   await deleteOwnedRow("education", userId, entryId);
-  revalidatePath("/cv");
 }
 
 export async function moveEducationEntry(entryId: string, direction: "up" | "down") {
   const userId = await requireUserId();
   await moveOwnedRow("education", userId, "user_id", userId, entryId, direction);
-  revalidatePath("/cv");
 }
 
 // ---------------------------------------------------------------------
@@ -124,8 +120,7 @@ export async function moveEducationEntry(entryId: string, direction: "up" | "dow
 export async function createExperienceEntry() {
   const userId = await requireUserId();
   const sortOrder = await nextSortOrder("experience", userId, "user_id", userId);
-  await insertOwnedRow("experience", userId, { sort_order: sortOrder });
-  revalidatePath("/cv");
+  return insertOwnedRow("experience", userId, { sort_order: sortOrder });
 }
 
 export async function saveExperienceEntry(entryId: string, formData: FormData) {
@@ -138,27 +133,26 @@ export async function saveExperienceEntry(entryId: string, formData: FormData) {
     end_date: formData.get("end_date"),
     is_current: formData.get("is_current") === "on",
   });
-  await updateOwnedRow("experience", userId, entryId, fields);
-  await replaceBullets(
-    "experience_bullets",
-    "experience_id",
-    entryId,
-    userId,
-    bulletContentsFrom(formData)
-  );
-  revalidatePath("/cv");
+  await Promise.all([
+    updateOwnedRow("experience", userId, entryId, fields),
+    replaceBullets(
+      "experience_bullets",
+      "experience_id",
+      entryId,
+      userId,
+      bulletContentsFrom(formData)
+    ),
+  ]);
 }
 
 export async function deleteExperienceEntry(entryId: string) {
   const userId = await requireUserId();
   await deleteOwnedRow("experience", userId, entryId);
-  revalidatePath("/cv");
 }
 
 export async function moveExperienceEntry(entryId: string, direction: "up" | "down") {
   const userId = await requireUserId();
   await moveOwnedRow("experience", userId, "user_id", userId, entryId, direction);
-  revalidatePath("/cv");
 }
 
 // ---------------------------------------------------------------------
@@ -167,8 +161,7 @@ export async function moveExperienceEntry(entryId: string, direction: "up" | "do
 export async function createProjectEntry() {
   const userId = await requireUserId();
   const sortOrder = await nextSortOrder("projects", userId, "user_id", userId);
-  await insertOwnedRow("projects", userId, { sort_order: sortOrder });
-  revalidatePath("/cv");
+  return insertOwnedRow("projects", userId, { sort_order: sortOrder });
 }
 
 export async function saveProjectEntry(entryId: string, formData: FormData) {
@@ -185,30 +178,29 @@ export async function saveProjectEntry(entryId: string, formData: FormData) {
   const techStackArray = tech_stack
     ? tech_stack.split(",").map((s) => s.trim()).filter(Boolean)
     : [];
-  await updateOwnedRow("projects", userId, entryId, {
-    ...rest,
-    tech_stack: techStackArray,
-  });
-  await replaceBullets(
-    "project_bullets",
-    "project_id",
-    entryId,
-    userId,
-    bulletContentsFrom(formData)
-  );
-  revalidatePath("/cv");
+  await Promise.all([
+    updateOwnedRow("projects", userId, entryId, {
+      ...rest,
+      tech_stack: techStackArray,
+    }),
+    replaceBullets(
+      "project_bullets",
+      "project_id",
+      entryId,
+      userId,
+      bulletContentsFrom(formData)
+    ),
+  ]);
 }
 
 export async function deleteProjectEntry(entryId: string) {
   const userId = await requireUserId();
   await deleteOwnedRow("projects", userId, entryId);
-  revalidatePath("/cv");
 }
 
 export async function moveProjectEntry(entryId: string, direction: "up" | "down") {
   const userId = await requireUserId();
   await moveOwnedRow("projects", userId, "user_id", userId, entryId, direction);
-  revalidatePath("/cv");
 }
 
 // ---------------------------------------------------------------------
@@ -221,14 +213,12 @@ export async function createSkill(formData: FormData) {
     name: formData.get("name"),
   });
   const sortOrder = await nextSortOrder("skills", userId, "user_id", userId);
-  await insertOwnedRow("skills", userId, { ...fields, sort_order: sortOrder });
-  revalidatePath("/cv");
+  return insertOwnedRow("skills", userId, { ...fields, sort_order: sortOrder });
 }
 
 export async function deleteSkill(skillId: string) {
   const userId = await requireUserId();
   await deleteOwnedRow("skills", userId, skillId);
-  revalidatePath("/cv");
 }
 
 // ---------------------------------------------------------------------
@@ -241,12 +231,10 @@ export async function createLink(formData: FormData) {
     url: formData.get("url"),
   });
   const sortOrder = await nextSortOrder("links", userId, "user_id", userId);
-  await insertOwnedRow("links", userId, { ...fields, sort_order: sortOrder });
-  revalidatePath("/cv");
+  return insertOwnedRow("links", userId, { ...fields, sort_order: sortOrder });
 }
 
 export async function deleteLink(linkId: string) {
   const userId = await requireUserId();
   await deleteOwnedRow("links", userId, linkId);
-  revalidatePath("/cv");
 }

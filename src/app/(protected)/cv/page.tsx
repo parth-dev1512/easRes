@@ -1,16 +1,15 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { headers } from "next/headers";
 import { getMasterCv } from "@/lib/data/cv";
 import { CvEditor } from "@/components/cv/CvEditor";
 import { DotGridBackground } from "@/components/puzzle/DotGridBackground";
 import { PuzzleCard } from "@/components/puzzle/PuzzleCard";
 
 export default async function CvPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  const cv = await getMasterCv(user!.id);
+  // Set by the proxy after it already validated the session for this
+  // request — avoids a second auth.getUser() network round trip here.
+  const userId = (await headers()).get("x-user-id")!;
+  const cv = await getMasterCv(userId);
 
   return (
     <DotGridBackground className="flex-1">

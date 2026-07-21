@@ -1,12 +1,13 @@
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 
+// The proxy (src/proxy.ts) already called auth.getUser() for this request
+// and stamped the validated id here — re-verifying via another getUser()
+// network round trip would be redundant.
 export async function requireUserId(): Promise<string> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("Unauthorized");
-  return user.id;
+  const userId = (await headers()).get("x-user-id");
+  if (!userId) throw new Error("Unauthorized");
+  return userId;
 }
 
 export async function nextSortOrder(

@@ -1,17 +1,16 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { headers } from "next/headers";
 
 export default async function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // The proxy already validated the session and stamped this header —
+  // re-checking with another auth.getUser() network call is redundant here.
+  const userId = (await headers()).get("x-user-id");
 
-  if (!user) {
+  if (!userId) {
     redirect("/login");
   }
 
