@@ -52,7 +52,7 @@ export function EducationSection({ entries: initialEntries }: { entries: Educati
   }
 
   return (
-    <section className="flex flex-col gap-4">
+    <section className="flex flex-col gap-4 lg:-mx-24 lg:w-[calc(100%+12rem)] xl:-mx-40 xl:w-[calc(100%+20rem)]">
       <PuzzleTag
         icon={School}
         title={"Academic\nInfo"}
@@ -60,18 +60,25 @@ export function EducationSection({ entries: initialEntries }: { entries: Educati
         color="blue"
         className="w-fit"
       />
-      {entries.map((entry) => (
-        <EntryCard
-          key={entry.id}
-          entryId={entry.id}
-          fields={FIELDS}
-          values={entry}
-          bullets={entry.education_bullets.map((b) => b.content)}
-          saveAction={saveEducationEntry}
-          deleteAction={handleDelete}
-          moveAction={handleMove}
-        />
-      ))}
+      {entries.map((entry) => {
+        const dateRange = `${entry.start_date || "?"} – ${entry.end_date || "?"}`;
+        return (
+          <EntryCard
+            key={entry.id}
+            entryId={entry.id}
+            fields={FIELDS}
+            values={entry}
+            bullets={entry.education_bullets.map((b) => b.content)}
+            saveAction={saveEducationEntry}
+            deleteAction={handleDelete}
+            moveAction={handleMove}
+            collapsible
+            dense
+            summaryTitle={entry.institution || "Untitled Institution"}
+            summarySubtitle={[entry.degree, dateRange].filter(Boolean).join(" · ")}
+          />
+        );
+      })}
       <BlueprintButton
         type="button"
         variant="secondary"

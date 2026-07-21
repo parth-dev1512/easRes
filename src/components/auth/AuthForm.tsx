@@ -26,6 +26,36 @@ export function AuthForm({
       </h1>
 
       <form action={formAction} className="flex flex-col gap-4">
+        {!isLogin && (
+          <>
+            <label className="flex flex-col gap-1">
+              <span className="text-xs font-bold uppercase tracking-wider">
+                Full Name
+              </span>
+              <input
+                type="text"
+                name="full_name"
+                required
+                autoComplete="name"
+                className="border-2 border-black px-3 h-11 focus:outline-none focus:ring-2 focus:ring-puzzle-blue"
+              />
+            </label>
+
+            <label className="flex flex-col gap-1">
+              <span className="text-xs font-bold uppercase tracking-wider">
+                Phone Number
+              </span>
+              <input
+                type="tel"
+                name="phone"
+                required
+                autoComplete="tel"
+                className="border-2 border-black px-3 h-11 focus:outline-none focus:ring-2 focus:ring-puzzle-blue"
+              />
+            </label>
+          </>
+        )}
+
         <label className="flex flex-col gap-1">
           <span className="text-xs font-bold uppercase tracking-wider">
             Email
@@ -55,7 +85,12 @@ export function AuthForm({
 
         {state?.error && (
           <p className="text-sm font-medium text-puzzle-red">
-            {state.error}
+            {state.error}{" "}
+            {state.accountExists && (
+              <Link href="/login" className="underline">
+                Log in instead.
+              </Link>
+            )}
           </p>
         )}
         {state?.success && (

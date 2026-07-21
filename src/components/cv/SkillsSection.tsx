@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { Terminal, X } from "lucide-react";
+import { Terminal, X, ChevronDown } from "lucide-react";
 import { PuzzleTag } from "@/components/puzzle/PuzzleTag";
 import { PuzzleCard } from "@/components/puzzle/PuzzleCard";
 import { BlueprintButton } from "@/components/puzzle/BlueprintButton";
@@ -11,6 +11,7 @@ import type { Skill } from "@/lib/types/cv";
 export function SkillsSection({ skills: initialSkills }: { skills: Skill[] }) {
   const [skills, setSkills] = useState(initialSkills);
   const [isPending, startTransition] = useTransition();
+  const [open, setOpen] = useState(true);
   const formRef = useRef<HTMLFormElement>(null);
 
   function handleDelete(skillId: string) {
@@ -28,14 +29,29 @@ export function SkillsSection({ skills: initialSkills }: { skills: Skill[] }) {
   }
 
   return (
-    <section className="flex flex-col gap-4">
-      <PuzzleTag
-        icon={Terminal}
-        title={"Tech\nSkills"}
-        subtitle="Stack & Competencies"
-        color="green"
-        className="w-fit"
-      />
+    <section className="flex flex-col gap-4 lg:-mx-24 lg:w-[calc(100%+12rem)] xl:-mx-40 xl:w-[calc(100%+20rem)]">
+      <div className="flex items-center gap-3">
+        <PuzzleTag
+          icon={Terminal}
+          title={"Tech\nSkills"}
+          subtitle="Stack & Competencies"
+          color="green"
+          className="w-fit"
+        />
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-label="Toggle skills"
+          aria-expanded={open}
+          className="h-10 w-10 border-2 border-black flex items-center justify-center hover:bg-slate-100 shrink-0"
+        >
+          <ChevronDown
+            size={18}
+            className={`transition-transform ${open ? "" : "-rotate-90"}`}
+          />
+        </button>
+      </div>
+      {open && (
       <PuzzleCard className="bg-white p-6 flex flex-col gap-4">
         <div className="flex flex-wrap gap-2">
           {skills.map((skill) => (
@@ -88,6 +104,7 @@ export function SkillsSection({ skills: initialSkills }: { skills: Skill[] }) {
           </BlueprintButton>
         </form>
       </PuzzleCard>
+      )}
     </section>
   );
 }

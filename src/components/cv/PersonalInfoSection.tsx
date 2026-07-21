@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { PuzzleCard } from "@/components/puzzle/PuzzleCard";
 import { BlueprintButton } from "@/components/puzzle/BlueprintButton";
 import { updateProfile } from "@/app/(protected)/cv/actions";
@@ -13,15 +14,31 @@ async function action(_prevState: unknown, formData: FormData) {
 
 export function PersonalInfoSection({ profile }: { profile: Profile }) {
   const [state, formAction, pending] = useActionState(action, undefined);
+  const [open, setOpen] = useState(true);
 
   return (
-    <section className="flex flex-col gap-4">
-      <h2 className="text-3xl font-[900] uppercase italic tracking-tighter">
-        Personal Info
-      </h2>
+    <section className="flex flex-col gap-4 lg:-mx-24 lg:w-[calc(100%+12rem)] xl:-mx-40 xl:w-[calc(100%+20rem)]">
+      <div className="flex items-center gap-3">
+        <h2 className="text-3xl font-[900] uppercase italic tracking-tighter">
+          Personal Info
+        </h2>
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-label="Toggle personal info"
+          aria-expanded={open}
+          className="h-10 w-10 border-2 border-black flex items-center justify-center hover:bg-slate-100 shrink-0"
+        >
+          <ChevronDown
+            size={18}
+            className={`transition-transform ${open ? "" : "-rotate-90"}`}
+          />
+        </button>
+      </div>
+      {open && (
       <PuzzleCard className="bg-white p-6">
         <form action={formAction} className="flex flex-col gap-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <label className="flex flex-col gap-1">
               <span className="text-xs font-bold uppercase tracking-wider">
                 Full Name
@@ -66,7 +83,7 @@ export function PersonalInfoSection({ profile }: { profile: Profile }) {
                 className="border-2 border-black px-2 h-9 text-sm focus:outline-none focus:ring-2 focus:ring-puzzle-blue"
               />
             </label>
-            <label className="col-span-2 flex flex-col gap-1">
+            <label className="sm:col-span-2 lg:col-span-3 flex flex-col gap-1">
               <span className="text-xs font-bold uppercase tracking-wider">
                 Website / Portfolio URL
               </span>
@@ -77,7 +94,7 @@ export function PersonalInfoSection({ profile }: { profile: Profile }) {
                 className="border-2 border-black px-2 h-9 text-sm focus:outline-none focus:ring-2 focus:ring-puzzle-blue"
               />
             </label>
-            <label className="col-span-2 flex flex-col gap-1">
+            <label className="sm:col-span-2 lg:col-span-3 flex flex-col gap-1">
               <span className="text-xs font-bold uppercase tracking-wider">
                 Summary
               </span>
@@ -106,6 +123,7 @@ export function PersonalInfoSection({ profile }: { profile: Profile }) {
           </div>
         </form>
       </PuzzleCard>
+      )}
     </section>
   );
 }

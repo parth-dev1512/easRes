@@ -55,16 +55,22 @@ export async function POST(request: Request) {
         { status: 502 }
       );
     }
-    if (message.toLowerCase().includes("rate limit") || message.toLowerCase().includes("429")) {
+    if (
+      message.toLowerCase().includes("rate limit") ||
+      message.toLowerCase().includes("429") ||
+      message.toLowerCase().includes("quota") ||
+      message.toLowerCase().includes("resource_exhausted") ||
+      message.toLowerCase().includes("billing")
+    ) {
       return NextResponse.json(
-        { error: "AI rate limit reached. Please try again shortly." },
+        { error: "Service exhausted right now, try after some time." },
         { status: 429 }
       );
     }
 
     console.error("Tailor pipeline error:", err);
     return NextResponse.json(
-      { error: "Failed to generate a tailored resume. Please try again." },
+      { error: "Service exhausted right now, try after some time." },
       { status: 503 }
     );
   }
