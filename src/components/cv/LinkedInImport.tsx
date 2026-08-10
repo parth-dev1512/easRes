@@ -81,7 +81,7 @@ export function LinkedInImport() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex items-center gap-3 w-full border-4 border-black px-5 py-4 bg-[#0A66C2] text-white font-[900] uppercase tracking-widest text-sm shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all"
+        className="flex items-center gap-3 w-full border-4 border-black px-5 py-4 bg-[#0A66C2] text-white font-[900] uppercase tracking-widest text-sm shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none active:scale-[0.98] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
       >
         <LinkedInLogo className="h-6 w-6 shrink-0" />
         Import from LinkedIn

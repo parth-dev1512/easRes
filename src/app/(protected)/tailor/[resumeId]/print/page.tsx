@@ -28,7 +28,7 @@ export default async function PrintResumePage({
       <div className="print:hidden sticky top-0 z-10 flex justify-end p-4">
         <PrintButton />
       </div>
-      <div className="max-w-[8.5in] mx-auto bg-white p-10 shadow-lg print:p-0 print:max-w-none print:shadow-none">
+      <div className="max-w-[210mm] mx-auto bg-white p-10 shadow-lg print:p-0 print:max-w-none print:shadow-none">
         <ResumePreview
           cv={cv}
           content={resume.generated_content}

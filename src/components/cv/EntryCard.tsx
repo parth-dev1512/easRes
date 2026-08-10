@@ -156,7 +156,7 @@ export function EntryCard({
                 type="button"
                 aria-label="Move up"
                 onClick={() => startTransition(() => moveAction(entryId, "up"))}
-                className="h-9 w-9 border-2 border-black flex items-center justify-center hover:bg-slate-100"
+                className="h-9 w-9 border-2 border-black flex items-center justify-center hover:bg-slate-100 active:scale-90 transition-transform"
               >
                 <ChevronUp size={16} />
               </button>
@@ -166,7 +166,7 @@ export function EntryCard({
                 onClick={() =>
                   startTransition(() => moveAction(entryId, "down"))
                 }
-                className="h-9 w-9 border-2 border-black flex items-center justify-center hover:bg-slate-100"
+                className="h-9 w-9 border-2 border-black flex items-center justify-center hover:bg-slate-100 active:scale-90 transition-transform"
               >
                 <ChevronDown size={16} />
               </button>
@@ -178,7 +178,7 @@ export function EntryCard({
                     startTransition(() => deleteAction(entryId));
                   }
                 }}
-                className="h-9 w-9 border-2 border-black flex items-center justify-center hover:bg-puzzle-red hover:text-white"
+                className="h-9 w-9 border-2 border-black flex items-center justify-center hover:bg-puzzle-red hover:text-white active:scale-90 transition-transform"
               >
                 <Trash2 size={16} />
               </button>
@@ -187,7 +187,7 @@ export function EntryCard({
               type="submit"
               variant="primary"
               className="px-6 h-10"
-              disabled={isSaving}
+              loading={isSaving}
             >
               {isSaving ? "Saving..." : justSaved ? "Saved" : "Save"}
             </BlueprintButton>

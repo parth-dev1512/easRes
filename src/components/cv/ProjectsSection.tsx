@@ -83,7 +83,7 @@ export function ProjectsSection({ entries: initialEntries }: { entries: ProjectE
         type="button"
         variant="secondary"
         className="w-fit px-6 h-12"
-        disabled={isPending}
+        loading={isPending}
         onClick={handleCreate}
       >
         + Add Project

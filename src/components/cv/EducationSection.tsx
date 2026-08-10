@@ -83,7 +83,7 @@ export function EducationSection({ entries: initialEntries }: { entries: Educati
         type="button"
         variant="secondary"
         className="w-fit px-6 h-12"
-        disabled={isPending}
+        loading={isPending}
         onClick={handleCreate}
       >
         + Add Education

@@ -116,7 +116,8 @@ export function TailorWorkspace({
           <BlueprintButton
             type="button"
             variant="primary"
-            disabled={jobDescription.trim().length < 50 || status === "generating"}
+            disabled={jobDescription.trim().length < 50}
+            loading={status === "generating"}
             onClick={handleGenerate}
           >
             {status === "generating" ? "Assembling..." : "Assemble Resume"}
@@ -174,7 +175,7 @@ export function TailorWorkspace({
                 type="button"
                 variant="primary"
                 className="ml-auto px-6"
-                disabled={saveState === "saving"}
+                loading={saveState === "saving"}
                 onClick={handleSave}
               >
                 {saveState === "saving" ? "Saving..." : resumeId ? "Update" : "Save Resume"}

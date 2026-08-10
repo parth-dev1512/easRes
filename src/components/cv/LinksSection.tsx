@@ -66,7 +66,7 @@ export function LinksSection({ links: initialLinks }: { links: CvLink[] }) {
                 type="button"
                 aria-label="Remove link"
                 onClick={() => handleDelete(link.id)}
-                className="text-puzzle-red"
+                className="text-puzzle-red active:scale-75 transition-transform"
               >
                 <X size={14} />
               </button>
@@ -96,7 +96,7 @@ export function LinksSection({ links: initialLinks }: { links: CvLink[] }) {
             type="submit"
             variant="secondary"
             className="px-6 h-10"
-            disabled={isPending}
+            loading={isPending}
           >
             Add
           </BlueprintButton>

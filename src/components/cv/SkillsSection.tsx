@@ -69,7 +69,7 @@ export function SkillsSection({ skills: initialSkills }: { skills: Skill[] }) {
                 type="button"
                 aria-label="Remove skill"
                 onClick={() => handleDelete(skill.id)}
-                className="text-puzzle-red"
+                className="text-puzzle-red active:scale-75 transition-transform"
               >
                 <X size={14} />
               </button>
@@ -98,7 +98,7 @@ export function SkillsSection({ skills: initialSkills }: { skills: Skill[] }) {
             type="submit"
             variant="secondary"
             className="px-6 h-10"
-            disabled={isPending}
+            loading={isPending}
           >
             Add
           </BlueprintButton>

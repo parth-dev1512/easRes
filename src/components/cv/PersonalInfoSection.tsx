@@ -124,7 +124,7 @@ export function PersonalInfoSection({ profile }: { profile: Profile }) {
               type="submit"
               variant="primary"
               className="px-6 h-10"
-              disabled={pending}
+              loading={pending}
             >
               {pending ? "Saving..." : justSaved ? "Saved" : "Save"}
             </BlueprintButton>

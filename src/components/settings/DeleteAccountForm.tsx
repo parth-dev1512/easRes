@@ -29,7 +29,8 @@ export function DeleteAccountForm() {
         type="button"
         variant="secondary"
         className="w-full border-puzzle-red text-puzzle-red hover:bg-puzzle-red hover:text-white"
-        disabled={!canDelete || isPending}
+        disabled={!canDelete}
+        loading={isPending}
         onClick={() => startTransition(() => deleteAccount())}
       >
         {isPending ? "Deleting..." : "Delete Account"}

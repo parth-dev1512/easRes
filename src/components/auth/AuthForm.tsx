@@ -102,7 +102,7 @@ export function AuthForm({
         <BlueprintButton
           type="submit"
           variant="primary"
-          disabled={pending}
+          loading={pending}
           className="w-full mt-2"
         >
           {pending ? "Please wait..." : isLogin ? "Log In" : "Sign Up"}
