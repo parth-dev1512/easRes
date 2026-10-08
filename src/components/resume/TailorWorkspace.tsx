@@ -200,7 +200,7 @@ export function TailorWorkspace({
       </div>
 
       <div className="lg:sticky lg:top-6 self-start">
-        <div className="w-full bg-white border border-slate-200 resume-shadow p-10 min-h-[600px]">
+        <div className="w-full bg-white border border-slate-200 resume-shadow overflow-x-auto min-h-[600px]">
           {generatedContent && toggleState ? (
             <ResumePreview cv={cv} content={generatedContent} toggleState={toggleState} />
           ) : (

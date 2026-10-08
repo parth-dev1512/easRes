@@ -50,7 +50,7 @@ body {
 @media print {
   @page {
     size: A4;
-    margin: 0.5in;
+    margin: 0;
   }
 }
 
@@ -84,3 +84,40 @@ body {
     animation: float 5s ease-in-out infinite;
   }
 }
+
+/* "Ashoka Gold" one-page CV format (see ResumePreview). Units are pt, A4 = 595x842. */
+.cv-page {
+  width: 595pt;
+  min-height: 842pt;
+  padding: 14pt 15pt 20pt 15pt;
+  background: #fff;
+  font-family: "Times New Roman", Times, "Liberation Serif", "Tinos", serif;
+  font-size: 9pt;
+  line-height: 12.75pt;
+  color: #000;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.cv-page * { box-sizing: border-box; }
+.cv-page .gold { color: #be7d02; }
+.cv-page .blk { color: #000; }
+.cv-page .cv-name { font-weight: 700; font-size: 12pt; line-height: 14pt; text-transform: uppercase; margin: 2pt 0 0 0.8pt; }
+.cv-page .cv-contact { margin: 2pt 0 0 0.8pt; line-height: 17pt; }
+.cv-page .cv-section { margin-top: 2pt; }
+.cv-page .cv-section-title {
+  font-weight: 700; font-size: 10.13pt; line-height: 11.5pt; text-transform: uppercase;
+  border-bottom: 0.75pt solid #000; margin-bottom: 3pt;
+}
+.cv-page .cv-edu-row { display: grid; grid-template-columns: 253pt 147pt 56.5pt 56.5pt 52pt; margin-bottom: 1.2pt; }
+.cv-page .cv-edu-row > div { padding-right: 4pt; }
+.cv-page .cv-edu-row > div:last-child { padding-right: 0; }
+.cv-page .cv-entry-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-weight: 700; font-size: 10.13pt; line-height: 15pt; margin-left: 0.8pt;
+}
+.cv-page .cv-entry-head .left { flex: 1 1 auto; padding-right: 12pt; }
+.cv-page .cv-entry-head .dates { flex: 0 0 auto; white-space: nowrap; color: #be7d02; text-align: right; }
+.cv-page .cv-entry-head .role { font-style: italic; }
+.cv-page ul.cv-points { list-style: none; margin: 0 0 0.5pt 0; padding: 0; }
+.cv-page ul.cv-points li { position: relative; padding-left: 6pt; line-height: 13.5pt; }
+.cv-page ul.cv-points li::before { content: "\2022"; position: absolute; left: -0.8pt; top: 0; }

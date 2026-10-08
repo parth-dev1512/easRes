@@ -1,8 +1,54 @@
+import type { ReactNode } from "react";
 import type { MasterCv } from "@/lib/types/cv";
 import type { GeneratedContent } from "@/lib/gemini/schema";
 import type { ToggleState } from "@/lib/types/resume";
 import { bulletKey } from "@/lib/types/resume";
 
+function dateRange(start: string | null, end: string | null, current = false) {
+  const to = current ? "Present" : end;
+  return [start, to].filter(Boolean).join(" - ");
+}
+
+function Section({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="cv-section">
+      <div className="cv-section-title">{title}</div>
+      {children}
+    </section>
+  );
+}
+
+function Sep({ children }: { children: string }) {
+  return <span className="blk">{children}</span>;
+}
+
+function Entry({
+  left,
+  dates,
+  bullets,
+}: {
+  left: ReactNode;
+  dates: string;
+  bullets: string[];
+}) {
+  return (
+    <div>
+      <div className="cv-entry-head">
+        <div className="left">{left}</div>
+        <div className="dates">{dates}</div>
+      </div>
+      {bullets.length > 0 && (
+        <ul className="cv-points">
+          {bullets.map((b, i) => (
+            <li key={i}>{b}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+/** Renders the CV in the one-page "Ashoka Gold" A4 format. */
 export function ResumePreview({
   cv,
   content,
@@ -46,133 +92,105 @@ export function ResumePreview({
   const visibleSkills = cv.skills.filter((s) => toggleState.skills[s.id]);
   const visibleLinks = cv.links.filter((l) => toggleState.links[l.id]);
 
+  const contactLines = [
+    [cv.profile.email, cv.profile.location].filter(Boolean).join(", "),
+    [cv.profile.phone, cv.profile.website_url].filter(Boolean).join(", "),
+    visibleLinks.map((l) => l.url).join(", "),
+  ].filter(Boolean);
+
   return (
-    <div className="font-serif text-slate-900">
-      <div className="mb-6">
-        <h2 className="text-4xl font-extrabold text-black tracking-tight font-sans">
-          {cv.profile.full_name ?? "Your Name"}
-        </h2>
-        {content.headline && (
-          <p className="text-sm text-slate-600 font-sans">{content.headline}</p>
-        )}
-        <div className="text-[13px] text-slate-700 mt-1 font-sans flex flex-wrap gap-4">
-          {cv.profile.email && <span>{cv.profile.email}</span>}
-          {cv.profile.phone && <span>{cv.profile.phone}</span>}
-          {cv.profile.location && <span>{cv.profile.location}</span>}
-          {cv.profile.website_url && <span>{cv.profile.website_url}</span>}
+    <div className="cv-page">
+      <div>
+        <div className="cv-name">{cv.profile.full_name ?? "Your Name"}</div>
+        <div className="cv-contact">
+          {contactLines.map((line, i) => (
+            <div key={i}>{line}</div>
+          ))}
         </div>
       </div>
 
-      <div className="space-y-6">
-        {toggleState.sections.summary && content.summary && (
-          <section>
-            <h3 className="text-sm font-bold uppercase tracking-wider border-b border-black pb-0.5 mb-2 font-sans">
-              Summary
-            </h3>
-            <p className="text-[13px] text-slate-800">{content.summary}</p>
-          </section>
-        )}
+      {toggleState.sections.summary && content.summary && (
+        <Section title="Profile Summary">
+          <div>{content.summary}</div>
+        </Section>
+      )}
 
-        {toggleState.sections.experience && visibleExperience.length > 0 && (
-          <section>
-            <h3 className="text-sm font-bold uppercase tracking-wider border-b border-black pb-0.5 mb-3 font-sans">
-              Work Experience
-            </h3>
-            <div className="space-y-4">
-              {visibleExperience.map(({ source, bullets }) => (
-                <div key={source!.id} className="break-inside-avoid">
-                  <div className="flex justify-between font-bold text-[13px] text-black">
-                    <span>
-                      {source!.company} &mdash; {source!.role_title}
-                    </span>
-                    <span>
-                      {source!.start_date} - {source!.is_current ? "Present" : source!.end_date}
-                    </span>
-                  </div>
-                  {bullets.length > 0 && (
-                    <ul className="list-disc list-outside text-[12px] text-slate-700 mt-1 ml-4 space-y-0.5">
-                      {bullets.map((b, i) => (
-                        <li key={i}>{b.text}</li>
-                      ))}
-                    </ul>
+      {toggleState.sections.education && visibleEducation.length > 0 && (
+        <Section title="Education">
+          {visibleEducation.map((edu, i) => {
+            const isDegree = i === 0;
+            const qualification = [edu!.degree, edu!.field_of_study]
+              .filter(Boolean)
+              .join(" in ");
+            return (
+              <div key={edu!.id} className="cv-edu-row">
+                <div className={isDegree ? "gold" : "blk"}>{qualification}</div>
+                <div className={isDegree ? "blk" : "gold"}>{edu!.institution}</div>
+                <div className="gold" />
+                <div className={isDegree ? "blk" : "gold"}>{edu!.end_date}</div>
+                <div className="gold">{edu!.gpa}</div>
+              </div>
+            );
+          })}
+        </Section>
+      )}
+
+      {toggleState.sections.projects && visibleProjects.length > 0 && (
+        <Section title="Projects">
+          {visibleProjects.map(({ source, bullets }) => (
+            <Entry
+              key={source!.id}
+              left={
+                <>
+                  <span className="gold">{source!.name}</span>
+                  {source!.tech_stack && source!.tech_stack.length > 0 && (
+                    <>
+                      <Sep> - </Sep>
+                      <span className="gold">{source!.tech_stack.join(", ")}</span>
+                    </>
                   )}
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
+                </>
+              }
+              dates={dateRange(source!.start_date, source!.end_date)}
+              bullets={bullets.map((b) => b.text)}
+            />
+          ))}
+        </Section>
+      )}
 
-        {toggleState.sections.projects && visibleProjects.length > 0 && (
-          <section>
-            <h3 className="text-sm font-bold uppercase tracking-wider border-b border-black pb-0.5 mb-3 font-sans">
-              Projects
-            </h3>
-            <div className="space-y-4">
-              {visibleProjects.map(({ source, bullets }) => (
-                <div key={source!.id} className="break-inside-avoid">
-                  <div className="flex justify-between font-bold text-[13px] text-black">
-                    <span>{source!.name}</span>
-                    {source!.tech_stack && source!.tech_stack.length > 0 && (
-                      <span className="italic text-slate-600 font-normal">
-                        {source!.tech_stack.join(", ")}
-                      </span>
-                    )}
-                  </div>
-                  {bullets.length > 0 && (
-                    <ul className="list-disc list-outside text-[12px] text-slate-700 mt-1 ml-4 space-y-0.5">
-                      {bullets.map((b, i) => (
-                        <li key={i}>{b.text}</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
+      {toggleState.sections.skills && visibleSkills.length > 0 && (
+        <Section title="Skills">
+          <div>
+            {visibleSkills.map((s, i) => (
+              <span key={s.id}>
+                {i > 0 && <Sep>, </Sep>}
+                <span className="gold">{s.name}</span>
+              </span>
+            ))}
+          </div>
+        </Section>
+      )}
 
-        {toggleState.sections.education && visibleEducation.length > 0 && (
-          <section>
-            <h3 className="text-sm font-bold uppercase tracking-wider border-b border-black pb-0.5 mb-3 font-sans">
-              Education
-            </h3>
-            <div className="space-y-2">
-              {visibleEducation.map((edu) => (
-                <div key={edu!.id} className="flex justify-between text-[13px] text-black">
-                  <span className="font-bold">
-                    {edu!.institution} &mdash; {edu!.degree}
+      {toggleState.sections.experience && visibleExperience.length > 0 && (
+        <Section title="Internships Experience">
+          {visibleExperience.map(({ source, bullets }) => (
+            <Entry
+              key={source!.id}
+              left={
+                <>
+                  <span className="gold" style={{ textTransform: "uppercase" }}>
+                    {source!.company}
                   </span>
-                  <span>
-                    {edu!.start_date} - {edu!.end_date}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {toggleState.sections.skills && visibleSkills.length > 0 && (
-          <section>
-            <h3 className="text-sm font-bold uppercase tracking-wider border-b border-black pb-0.5 mb-2 font-sans">
-              Skills
-            </h3>
-            <p className="text-[13px] text-slate-800">
-              {visibleSkills.map((s) => s.name).join(", ")}
-            </p>
-          </section>
-        )}
-
-        {toggleState.sections.links && visibleLinks.length > 0 && (
-          <section>
-            <h3 className="text-sm font-bold uppercase tracking-wider border-b border-black pb-0.5 mb-2 font-sans">
-              Links
-            </h3>
-            <p className="text-[13px] text-slate-800 font-sans">
-              {visibleLinks.map((l) => `${l.label}: ${l.url}`).join("  |  ")}
-            </p>
-          </section>
-        )}
-      </div>
+                  <Sep> | </Sep>
+                  <span className="gold role">{source!.role_title}</span>
+                </>
+              }
+              dates={dateRange(source!.start_date, source!.end_date, source!.is_current)}
+              bullets={bullets.map((b) => b.text)}
+            />
+          ))}
+        </Section>
+      )}
     </div>
   );
 }
