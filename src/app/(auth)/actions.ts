@@ -87,6 +87,22 @@ export async function signup(
   return { success: "Check your email to confirm your account." };
 }
 
+// Works for both new and returning users: Supabase creates the account on
+// first Google sign-in and signs into the existing one afterwards.
+export async function signInWithGoogle() {
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+    },
+  });
+  if (error || !data.url) {
+    redirect("/login?error=oauth-error");
+  }
+  redirect(data.url);
+}
+
 export async function logout() {
   const supabase = await createClient();
   await supabase.auth.signOut();
