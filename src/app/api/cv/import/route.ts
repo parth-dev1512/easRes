@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { parseResumePdf } from "@/lib/gemini/client";
+import { parseLinkedInPdf } from "@/lib/linkedin/parse";
 import { importParsedResume } from "@/lib/data/importCv";
-
-export const maxDuration = 60;
 
 const MAX_FILE_BYTES = 8 * 1024 * 1024; // 8MB
 
@@ -34,42 +32,25 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "File is too large (max 8MB)" }, { status: 400 });
   }
 
-  const arrayBuffer = await file.arrayBuffer();
-  const base64Pdf = Buffer.from(arrayBuffer).toString("base64");
-
   try {
-    const parsed = await parseResumePdf(base64Pdf);
+    const parsed = await parseLinkedInPdf(new Uint8Array(await file.arrayBuffer()));
     const summary = await importParsedResume(user.id, parsed);
     return NextResponse.json({ summary });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown error";
-
-    if (message.includes("GEMINI_API_KEY")) {
-      return NextResponse.json({ error: "AI is not configured" }, { status: 503 });
-    }
-    if (message.includes("schema validation")) {
+    if (err instanceof Error && err.message === "NOT_LINKEDIN_PDF") {
       return NextResponse.json(
-        { error: "Couldn't read that PDF's structure. Please try again." },
-        { status: 502 }
-      );
-    }
-    if (
-      message.toLowerCase().includes("rate limit") ||
-      message.toLowerCase().includes("429") ||
-      message.toLowerCase().includes("quota") ||
-      message.toLowerCase().includes("resource_exhausted") ||
-      message.toLowerCase().includes("billing")
-    ) {
-      return NextResponse.json(
-        { error: "Service exhausted right now, try after some time." },
-        { status: 429 }
+        {
+          error:
+            "That doesn't look like a LinkedIn profile PDF. Use Profile → Resources → Save to PDF on LinkedIn.",
+        },
+        { status: 422 }
       );
     }
 
     console.error("CV import error:", err);
     return NextResponse.json(
-      { error: "Service exhausted right now, try after some time." },
-      { status: 503 }
+      { error: "Couldn't read that PDF. Please try again." },
+      { status: 500 }
     );
   }
 }

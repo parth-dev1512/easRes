@@ -2,8 +2,6 @@ import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { buildTailorPrompt } from "@/lib/gemini/prompt";
 import { GeneratedContentSchema, type GeneratedContent } from "@/lib/gemini/schema";
-import { ParsedResumeSchema, type ParsedResume } from "@/lib/gemini/importSchema";
-import { RESUME_IMPORT_PROMPT } from "@/lib/gemini/importPrompt";
 import type { MasterCv } from "@/lib/types/cv";
 
 // Temporary swap from Gemini -> Claude. To switch back, point the two API
@@ -123,35 +121,4 @@ export async function tailorResume(
   }
 
   return sanitizeAgainstMasterCv(parsed, cv);
-}
-
-export async function parseResumePdf(base64Pdf: string): Promise<ParsedResume> {
-  const pdfBlock: Anthropic.Messages.ContentBlockParam = {
-    type: "document",
-    source: { type: "base64", media_type: "application/pdf", data: base64Pdf },
-  };
-
-  let parsed: ParsedResume | null;
-  try {
-    parsed = await callClaude<ParsedResume>(RESUME_IMPORT_PROMPT, ParsedResumeSchema, [
-      pdfBlock,
-    ]);
-  } catch (err) {
-    throw normalizeError(err);
-  }
-
-  if (!parsed) {
-    const retryPrompt = `${RESUME_IMPORT_PROMPT}\n\nYour previous response failed schema validation. Return valid JSON only, matching the schema exactly.`;
-    try {
-      parsed = await callClaude<ParsedResume>(retryPrompt, ParsedResumeSchema, [pdfBlock]);
-    } catch (err) {
-      throw normalizeError(err);
-    }
-  }
-
-  if (!parsed) {
-    throw new Error("Claude response failed schema validation");
-  }
-
-  return parsed;
 }
